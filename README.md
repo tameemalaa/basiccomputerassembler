@@ -1,13 +1,70 @@
-# Basic Computer Assembler
+# Project 2 : Basic Computer Assembler
 
-## What is this?
+Welcome to Project 2 of CSE311 Computer Organization!
 
-This a simple assembler designed for the Basic Computer described in M.Mano's book "Computer System Architecture". The Basic Computer has a 16-bit instruction divided into 12-bit address, 3-bit opcode and 1-bit for direct(0)/indirect(1) addressing modes.
+In this project, you will be building a very simple assembler for the Basic Computer Instruction Set Architecture as per M.Mano's book "Computer System Architecture" [1].
 
-The Basic Computer's ISA supports 25 instructions as following:
-* Memory-Reference Instructions (MRI) : (7)
-* Register-Reference Instructions (RRI) (12)
-* Input-Output Instructions (IOI) (6)
+The Basic Computer has a 16-bit instruction divided into 12-bit address, 3-bit opcode and 1-bit for addressing mode.
+
+The Basic Computer's ISA supports 25 instructions categorized as following:
+* Memory-Reference Instructions (MRI) : 7 instructions
+* Register-Reference Instructions (RRI) : 12 instructions
+* Input-Output Instructions (IOI) : 6 instructions
+
+The detailed instructions and their corresponding binary representations are saved in three files `mri.txt` for memory-reference instructions, `rri.txt` for register-reference instructions and finally `ioi.txt` for input-output instructions. Each file contains the instructions each in a separate line, and each line has the instruction and its representation separated by a space. No empty lines are allowed in this file (however, this case is not programmed to raise any errors in the implemented code, yet). The Instruction Set supported by this assembler can be changed by modifying the three mentioned files.
+
+However, there are only 4 pseudo-instructions supported by this assembler: `ORG`, `END`, `HEX` and `DEC`. These instructions do not have a direct binary mapping, but are instructions to the assembler to behave in a certain way during the first and second passes. ** Your implementation of the first and second pass of this project should consider only these four pseudo-instructions**.
+
+## Assembly Language Rules
+
+The assembly code supported by this simple assembler must stick to some basic rules otherwise it will yield unpredictable results.
+
+* Each line consists of four parts:
+    1. **Label's column**: 3 characters followed by a comma followed by the instruction in the same line. Any label that is not following this convention must yield an error.
+        For example, the following code is invalid:
+        ```
+        ROT,
+        CIL
+        BUN ROT
+        ```
+        Instead, you should write the previous code in the following format:
+        ```
+        ROT, CIL
+        BUN ROT
+        ```
+    2. **Instruction's column**: as shown in the three tables above, this column can have any of the supported instructions.
+    3. **Operand's column**: the operand must correspond to a label included in this assembly code. Reference to labels that do not exist in the same assembly file must cause an error.
+    4. **Addressing mode flag**: add I if the instruction is indirect.
+    5. **Comments' column**: starts with `/` followed by any text. This whole text will be discarded by the assembler and serves the purpose of documentation only.
+* There is at least one space between every column.
+* Addresses placed after `ORG` are in hexadecimal and are written directly without preceding it with any special characters i.e. `100` is actually (32)<sub>10.
+* Similar to the last point, labels created using the `HEX` pseudo instruction should also be without any special characters and should directly write the hexadecimal digits i.e. `AC41`.
+
+
+You should see an example at `testcode.asm` and `testcode.mc` for the assembly code and the assembled binary machine code, respectively. In the output file, the first column corresponds to the memory location (12 bits), and the second column corresponds to the translated binary representation of the instructions (16 bits).
+
+## assembler.py
+
+The class `Assembler` has 6 methods already implemented for you. It has 7 data structures to save the input assembly code, address symbol table, the instruction set tables and other important information necessary for the assembly. Please read the code carefully before attempting to make any modifications, understand the purpose of every property and method first.
+
+After the second pass, the private property `__bin` (of type dict) should have the binary representation of every assembly instructions as values and their location in memory as keys. The public method `assemble()` returns that object after completing the second pass so that it can be used to store the binary output in a file or send it to the standard output.
+
+
+
+## Your task
+
+Your task in this project is to write the code of the `__first_pass(self)` and `__second_pass(self)` methods of the `Assembler` class. The flowchart of the first pass and second pass can be found in Mano's book[1]. You should use the implemented methods when needed or write your own methods to complete this task. You must stick to the language rules and to explained output format (dictionary `__bin`).
+
+Please make sure that you translate all instructions and locations into binary format, and that all binary locations (or addresses) are 12-bit and all binary instructions are 16-bit. If a binary number's length is less than 12 or 16, it must be left-padded with zeros. Moreover, notice that the keys and values at `__bin` are binary numbers of type string i.e. `'00111010011'` not actual integers.
+
+Once your implement the two functions correctly, run `testscript.py` and you should see the following:
+```
+Assembling...
+TEST PASSED
+```
+If your implementation has an issue, you should see `TEST FAILED` instead.
+
+## Appendix
 
 The following is the detailed ISA:
 
@@ -58,37 +115,5 @@ Similar to RRI, these instructions don't have any operands and are translated di
 
 There are four more instructions that can appear in the assembly code which does not directly map into a binary representation: `ORG`, `END`, `HEX`, and `DEC`. These instructions tell the assembler that their location has a special meaning.
 
-## Assembly Language Rules
-
-The assembly code supported by this simple assembler must stick to some basic rules otherwise it will yield unpredictable results.
-
-* Each line consists of four parts:
-    1. *Label's column*: 3 characters followed by a comma. Any label that is not following this convention will yield an error.
-    2. *Instruction's column*: as shown in the three tables above, this column can have any of the preceding instructions.
-    3. *Operand's column*: the operand must correspond to label included in this assembly code. Reference to labels that do not exist in the same assembly file will cause an error.
-    4. *Addressing mode flag*: add I if the instruction is indirect.
-    5. *Comments' column*: starts with `/` followed by any text. This whole text will be discarded by the assembler and serves the purpose of documentation only.
-* There is at least one space between every column.
-* Addresses placed after `ORG` are in hexadecimal and are written directly without preceding it with any special characters i.e. `100` is actually (32)<sub>10.
-* Similar to the last point, labels created using the `HEX` pseudo instruction should also be without any special characters and should directly write the hexadecimal digits i.e. `AC41`.
-* The output binary file is a `.txt` file where the first column represents the address of the instruction and the second column represents the binary value of the corresponding instruction.
-
-
-## Changing ISA
-
-The current ISA is divided into three different files `mri.txt`, `rri.txt`, and `ioi.txt`. You can add, modify or remove any instruction by changing the corresponding files.
-
-## How to use?
-
-Basically, one class `Assembler` is responsible for almost all operations regarding the assembly process. You first creat an object of the `Assembler` class and pass the MRI, RRI and IOI file paths to the constructor. This way, the object automatically loads the ISA from the files and saves them into internal data structures. Next, you call the method `assemble(assembly_file_path)` and passes the path to your assembly file path. The assembly file must end with `.S` or `.asm` file extension otherwise, the code will yield an error. As a starter, an assembly code is provided in `code.asm` file and the output assembly binaries are stores in `out.txt`.
-
-The method `assemble()` returns a dictionary, where the keys represent locations (or memory addresses) and values represent the binary representations of the instructions at the corresponding key's value (location or address).
-
-
-## How to report a bug?
-
-This code is a very early implementation of the assembler. In case you faced any bugs or problems, please start an issue indicating the problem in details.
-
-## Notes
-
-The code in this repo is an exercise to design a simple assembler for the Basic Computer as per M.Mano's book (“Computer System Architecture,” Pearson Publisher, 3rd Edition, 1992). It is a part of "CSE311 Computer Organization" course taught in Egypt-Japan University of Science and Technology, Egypt - by Prof. Mostafa Soliman. The code here is written by Eng. Osama Adel in December 2020 as part of his role as a Teaching Assistant of this course.
+## References
+[1] M. Mano, “Computer System Architecture,” Pearson Publisher, 3rd Edition, 1992.
