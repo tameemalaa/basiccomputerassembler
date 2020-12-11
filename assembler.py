@@ -114,6 +114,25 @@ class Assembler(object):
                     del self.__asm[i][j:]
                     break
 
+    def __format2bin(self, num:str, numformat:str, format_bits:int) -> str:
+        """
+        converts num from numformat (hex or dec) to binary representation with
+        max format_bits. If the number after conversion is less than format_bits
+        long, the formatted text will be left-padded with zeros.
+        Arguments:
+            num (str): the number to be formatted as binary. It can be in either
+                        decimal or hexadecimal format.
+            numformat (str): the format of num; either 'hex' or 'dec'.
+            format_bits (int): the number of bits you want num to be converted to
+        """
+        if numformat == 'dec':
+            return '{:b}'.format(int(num)).zfill(format_bits)
+        elif numformat == 'hex':
+            return '{:b}'.format(int(num, 16)).zfill(format_bits)
+        else:
+            raise Exception('format2bin: not supported format provided.')
+        
+
 
     def __first_pass(self) -> None:
         """
