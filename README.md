@@ -13,14 +13,14 @@ The Basic Computer's ISA supports 25 instructions categorized as following:
 
 The detailed instructions and their corresponding binary representations are saved in three files `mri.txt` for memory-reference instructions, `rri.txt` for register-reference instructions and finally `ioi.txt` for input-output instructions. Each file contains the instructions each in a separate line, and each line has the instruction and its representation separated by a space. No empty lines are allowed in this file (however, this case is not programmed to raise any errors in the implemented code, yet). The Instruction Set supported by this assembler can be changed by modifying the three mentioned files.
 
-However, there are only 4 pseudo-instructions supported by this assembler: `ORG`, `END`, `HEX` and `DEC`. These instructions do not have a direct binary mapping, but are instructions to the assembler to behave in a certain way during the first and second passes. ** Your implementation of the first and second pass of this project should consider only these four pseudo-instructions**.
+However, there are only 4 pseudo-instructions supported by this assembler: `ORG`, `END`, `HEX` and `DEC`. These instructions do not have a direct binary mapping, but are instructions to the assembler to behave in a certain way during the first and second passes. **Your implementation of the first and second pass of this project should consider only these four pseudo-instructions**.
 
 ## Assembly Language Rules
 
 The assembly code supported by this simple assembler must stick to some basic rules otherwise it will yield unpredictable results.
 
 * Each line consists of four parts:
-    1. **Label's column**: 3 characters followed by a comma followed by the instruction in the same line. Any label that is not following this convention must yield an error.
+    1. **Label's column** (optional): 3 characters followed by a comma followed by the instruction in the same line. Any label that is not following this convention must yield an error.
         For example, the following code is invalid:
         ```
         ROT,
@@ -32,10 +32,10 @@ The assembly code supported by this simple assembler must stick to some basic ru
         ROT, CIL
         BUN ROT
         ```
-    2. **Instruction's column**: as shown in the three tables above, this column can have any of the supported instructions.
-    3. **Operand's column**: the operand must correspond to a label included in this assembly code. Reference to labels that do not exist in the same assembly file must cause an error.
-    4. **Addressing mode flag**: add I if the instruction is indirect.
-    5. **Comments' column**: starts with `/` followed by any text. This whole text will be discarded by the assembler and serves the purpose of documentation only.
+    2. **Instruction's column** (required): This column can have any of the supported instructions.
+    3. **Operand's column** (optional): the operand must correspond to a label included in this assembly code. Reference to labels that do not exist in the same assembly file must cause an error.
+    4. **Addressing mode flag** (optional): add `I` if the instruction is indirect.
+    5. **Comments' column** (optional): starts with `/` followed by any text. This whole text will be discarded by the assembler and serves the purpose of documentation only.
 * There is at least one space between every column.
 * Addresses placed after `ORG` are in hexadecimal and are written directly without preceding it with any special characters i.e. `100` is actually (32)<sub>10.
 * Similar to the last point, labels created using the `HEX` pseudo instruction should also be without any special characters and should directly write the hexadecimal digits i.e. `AC41`.
@@ -117,3 +117,7 @@ There are four more instructions that can appear in the assembly code which does
 
 ## References
 [1] M. Mano, “Computer System Architecture,” Pearson Publisher, 3rd Edition, 1992.
+
+## Credits
+
+This project was created by Mostafa Soliman and Osama Adel, 12 Decemeber 2020.
