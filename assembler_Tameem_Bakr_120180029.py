@@ -141,7 +141,19 @@ class Assembler(object):
         self.__address_symbol_table. The location must be in binary (not hex or dec).
         Returns None
         """
-        pass
+        lc = 0
+        for i in self.__asm:
+            holder = i[0]
+            if self.__islabel(holder):
+                self.__address_symbol_table[holder[:-1]] = self.__format2bin(str(lc), "dec", 12)
+            elif holder == "org":
+                lc = int(self.__format2bin(i[1], "hex", 12), 2)
+                continue
+            elif holder == "end":
+                print(self.__address_symbol_table)
+                return 
+            lc += 1
+
 
 
 
@@ -153,4 +165,28 @@ class Assembler(object):
         also store the translated instruction's binary representation alongside its 
         location (in binary too) in self.__bin.
         """
-        pass
+        lc = 0 
+        line = 1
+        try:
+            for i in self.__asm:
+                if self.__islabel(i[0]): i = i[1:] 
+                if i[0] == 'org':
+                    lc = int(self.__format2bin(i[1], "hex", 12), 2)
+                    continue
+                elif i[0] == 'end': 
+                    return
+                elif  i[0] == "hex" or i[0] == "dec":
+                    value = self.__format2bin(i[1], i[0], 16)                    
+                elif  i[0] in self.__mri_table.keys():
+                    inst_code = self.__mri_table[i[0]]
+                    address= self.__address_symbol_table[i[1]]
+                    if i[-1] == "i" : value = "1"+inst_code+address
+                    else: value = "0"+inst_code+address
+                elif i[0] in self.__rri_table: value = self.__rri_table[i[0]]
+                elif i[0] in self.__ioi_table: value = self.__ioi_table[i[0]]
+                self.__bin[self.__format2bin(lc,"dec" , 12 )] = value
+                lc+=1
+                line+=1
+        except:
+            raise Exception("Assembling failed at line ", line)
+            

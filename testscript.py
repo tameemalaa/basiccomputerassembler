@@ -1,4 +1,4 @@
-from assembler import Assembler
+from assembler_Tameem_Bakr_120180029 import Assembler
 
 INPUT_FILE = 'testcode.asm'
 OUT_FILE = 'testcode.mc'
@@ -17,4 +17,5 @@ if __name__ == "__main__":
     for lc in binaries:
         bin_text += lc + '\t' + binaries[lc] + '\n'
     with open(OUT_FILE, 'r') as f:
+        print(bin_text)
         print('TEST PASSED' if f.read() == bin_text else 'TEST FAILED')
